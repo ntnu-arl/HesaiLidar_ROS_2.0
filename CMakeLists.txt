@@ -89,7 +89,8 @@ if($ENV{ROS_VERSION} MATCHES "1")
     sensor_msgs
     std_msgs
     message_generation
-    roslib)
+    roslib
+    rosbag)
 
   add_message_files(
     FILES
@@ -207,7 +208,24 @@ target_include_directories(hesai_ros_driver_node PRIVATE
 #Ros#
 if($ENV{ROS_VERSION} MATCHES "1")
   target_link_libraries(hesai_ros_driver_node  ${ROS_LIBS})
-  install(TARGETS hesai_ros_driver_node ${LIB_TARGETS}
+
+  add_executable(bag_converter
+    node/bag_converter.cpp
+  )
+  target_link_libraries(bag_converter
+    ${YAML_CPP_LIBRARIES}
+    ${Boost_LIBRARIES}
+    ${LIB_TARGETS}
+    ${ROS_LIBS}
+    ${catkin_LIBRARIES}
+  )
+  target_include_directories(bag_converter PRIVATE
+    src/manager
+    ${CMAKE_CURRENT_BINARY_DIR}
+  )
+  add_dependencies(bag_converter ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+  install(TARGETS hesai_ros_driver_node bag_converter ${LIB_TARGETS}
           RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
           LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
           ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
