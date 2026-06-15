@@ -142,7 +142,7 @@ int main(int argc, char** argv) {
                frame.points[frame.points_num - 1].timestamp);
         {
           std::lock_guard<std::mutex> lock(out_bag_mutex);
-          out_bag.write(cloud_topic, cloud_msg.header.stamp, cloud_msg);
+          out_bag.write(cloud_topic, cloud_msg.header.stamp + ros::Duration(0.12), cloud_msg);
         }
         frame_count++;
       });
